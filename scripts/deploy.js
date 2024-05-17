@@ -7,7 +7,13 @@
 const hre = require("hardhat");
 
 async function main() {
+  // set up accounts
+  [buyer, seller, inspector, lender] = await ethers.getSigners();
 
+  // Deploy real Estate
+  const RealEstate = await ethers.getContractFactory("RealEstate");
+  const realEstate = await RealEstate.deploy();
+  await realEstate.deployed();
 }
 
 // We recommend this pattern to be able to use async/await everywhere

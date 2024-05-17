@@ -142,6 +142,36 @@ describe("Escrow", () => {
         .connect(inspector)
         .updateInspectionStatus(1, true);
       await transaction.wait();
+
+      transaction = await escrow.connect(seller).approveSale(1);
+      await transaction.wait();
+
+      transaction = await escrow.connect(lender).approveSale(1);
+      await transaction.wait();
+
+      transaction = await escrow.connect(buyer).approveSale(1);
+      await transaction.wait();
+
+      await lender.sendTransaction({
+        to: escrow.address,
+        value: tokens(5),
+      });
+      await transaction.wait();
+
+      transaction = await escrow.connect(seller).finalizeSale(1);
+      await transaction.wait();
+    });
+
+    it("Updates balance", async () => {
+      expect(await escrow.getBalance()).to.be.equal(0);
+    });
+
+    it("Updates the ownership", async () => {
+      expect(await realEstate.ownerOf(1)).to.be.equal(buyer.address);
+    });
+
+    it("Removes the nft from the listed properties", async () => {
+      expect(await escrow.isListed(1)).to.be.equal(false);
     });
   });
 });
